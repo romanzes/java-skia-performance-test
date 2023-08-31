@@ -43,14 +43,14 @@ public class Main {
     }
 
     private static void drawRaster(Canvas canvas) {
+        canvas.save();
+        canvas.translate(1000.0f, 0.0f);
+        canvas.scale(0.2f, 0.2f);
         try (var bitmapData = Data.makeFromFileName("mars.jpg")) {
-            var image = Image.makeDeferredFromEncodedBytes(bitmapData.getBytes());
-            canvas.save();
-            canvas.translate(1000.0f, 0.0f);
-            canvas.scale(0.2f, 0.2f);
-            canvas.drawImage(image, 0.0f, 0.0f);
-            canvas.restore();
+            var bitmap = Image.makeDeferredFromEncodedBytes(bitmapData.getBytes());
+            canvas.drawImage(bitmap, 0.0f, 0.0f);
         }
+        canvas.restore();
     }
 
     private static void drawText(Canvas canvas) {
