@@ -5,6 +5,7 @@ import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.svg.SVGDOM;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Main {
@@ -42,9 +43,10 @@ public class Main {
         File rasterFile = checkFileExists(dirPath + File.separator + "mars.jpg");
         File svgFile = checkFileExists(dirPath + File.separator + "pinocchio.svg");
         File fontFile = checkFileExists(dirPath + File.separator + "Adigiana_Ultra.ttf");
+        File outputFile = new File(dirPath + File.separator + "output.png");
 
         for (int i = 0; i < loopCount; i++) {
-            performance_test(rasterFile, svgFile, fontFile);
+            performance_test(rasterFile, svgFile, fontFile, outputFile);
         }
     }
 
@@ -57,7 +59,7 @@ public class Main {
         return file;
     }
 
-    private static void performance_test(File rasterFile, File svgFile, File fontFile) throws IOException {
+    private static void performance_test(File rasterFile, File svgFile, File fontFile, File outputFile) throws IOException {
         try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
             paint.setAntiAlias(true);
             var canvas = surface.getCanvas();
@@ -66,7 +68,7 @@ public class Main {
             drawRaster(canvas, paint, rasterFile);
             drawText(canvas, fontFile);
             drawSVG(canvas, svgFile);
-            saveToPng(surface);
+            saveToPng(surface, outputFile);
         }
     }
 
@@ -153,11 +155,13 @@ public class Main {
         canvas.restore();
     }
 
-    private static void saveToPng(Surface surface) throws IOException {
+    private static void saveToPng(Surface surface, File outputFile) throws IOException {
         var data = EncoderPNG.encode(surface.makeImageSnapshot());
         if (data != null) {
             byte[] pngBytes = data.getBytes();
-            java.nio.file.Files.write(java.nio.file.Path.of("output.png"), pngBytes);
+            try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                outputStream.write(pngBytes);
+            }
         }
     }
 }
