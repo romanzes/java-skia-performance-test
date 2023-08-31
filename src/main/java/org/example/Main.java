@@ -67,7 +67,22 @@ public class Main {
             typefaceProvider.registerTypeface(font, "Adigiana");
             fontCollection.setAssetFontManager(typefaceProvider);
             var paragraphBuilder = new ParagraphBuilder(style, fontCollection);
-            paragraphBuilder.addText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n");
+            paragraphBuilder.addText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, ");
+            textStyle.setColor(Color.makeRGB(255, 0, 0));
+            paragraphBuilder.pushStyle(textStyle);
+            paragraphBuilder.addText("sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
+            textStyle.setColor(Color.makeRGB(0, 255, 0));
+            paragraphBuilder.pushStyle(textStyle);
+            paragraphBuilder.addText("Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut ");
+            textStyle.setColor(Color.makeRGB(0, 0, 255));
+            paragraphBuilder.pushStyle(textStyle);
+            paragraphBuilder.addText("aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in ");
+            textStyle.setColor(Color.makeRGB(255, 255, 0));
+            paragraphBuilder.pushStyle(textStyle);
+            paragraphBuilder.addText("voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint ");
+            textStyle.setColor(Color.makeRGB(0, 255, 255));
+            paragraphBuilder.pushStyle(textStyle);
+            paragraphBuilder.addText("occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n");
             var paragraph = paragraphBuilder.build();
             paragraph.layout(900);
 
