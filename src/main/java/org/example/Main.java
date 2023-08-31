@@ -4,18 +4,68 @@ import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.svg.SVGDOM;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        String dirPath = null;
+        int loopCount = 1;
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.equals("--dir")) {
+                dirPath = args[++i];
+            } else if (arg.equals("--loop")) {
+                try {
+                    loopCount = Integer.parseInt(args[++i]);
+                } catch (Exception ex) {
+                    System.err.println("Set loop count with --loop <number>");
+                    System.exit(1);
+                }
+            } else {
+                System.err.printf("Invalid argument: %s\n", arg);
+                System.exit(1);
+            }
+        }
+
+        if (dirPath == null) {
+            System.err.println("Set working directory with --dir <path>");
+            System.exit(1);
+        }
+
+        File dir = new File(dirPath);
+        if (!dir.exists() || !dir.isDirectory()) {
+            System.err.printf("No such directory: %s\n", dirPath);
+            System.exit(1);
+        }
+
+        File rasterFile = checkFileExists(dirPath + File.separator + "mars.jpg");
+        File svgFile = checkFileExists(dirPath + File.separator + "pinocchio.svg");
+        File fontFile = checkFileExists(dirPath + File.separator + "Adigiana_Ultra.ttf");
+
+        for (int i = 0; i < loopCount; i++) {
+            performance_test(rasterFile, svgFile, fontFile);
+        }
+    }
+
+    private static File checkFileExists(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            System.err.printf("File not found: %s\n", file);
+            System.exit(1);
+        }
+        return file;
+    }
+
+    private static void performance_test(File rasterFile, File svgFile, File fontFile) throws IOException {
         try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
             paint.setAntiAlias(true);
             var canvas = surface.getCanvas();
             canvas.clear(0xFFFFFFFF);
             drawPath(canvas, paint);
-            drawRaster(canvas, paint);
-            drawText(canvas);
-            drawSVG(canvas);
+            drawRaster(canvas, paint, rasterFile);
+            drawText(canvas, fontFile);
+            drawSVG(canvas, svgFile);
             saveToPng(surface);
         }
     }
@@ -43,20 +93,20 @@ public class Main {
         canvas.restore();
     }
 
-    private static void drawRaster(Canvas canvas, Paint paint) {
+    private static void drawRaster(Canvas canvas, Paint paint, File rasterFile) {
         canvas.save();
         canvas.translate(1000.0f, 0.0f);
         canvas.scale(0.2f, 0.2f);
-        try (var bitmapData = Data.makeFromFileName("mars.jpg")) {
+        try (var bitmapData = Data.makeFromFileName(rasterFile.getAbsolutePath())) {
             var bitmap = Image.makeDeferredFromEncodedBytes(bitmapData.getBytes());
             canvas.drawImage(bitmap, 0.0f, 0.0f, paint);
         }
         canvas.restore();
     }
 
-    private static void drawText(Canvas canvas) {
+    private static void drawText(Canvas canvas, File fontFile) {
         var typefaceProvider = new TypefaceFontProvider();
-        try (var font = Typeface.makeFromFile("Adigiana_Ultra.ttf")) {
+        try (var font = Typeface.makeFromFile(fontFile.getAbsolutePath())) {
             typefaceProvider.registerTypeface(font, "Adigiana");
         }
         var fontCollection = new FontCollection();
@@ -92,11 +142,11 @@ public class Main {
         paragraph.paint(canvas, 100.0f, 1100.0f);
     }
 
-    private static void drawSVG(Canvas canvas) {
+    private static void drawSVG(Canvas canvas, File svgFile) {
         canvas.save();
         canvas.translate(1200.0f, 1200.0f);
         canvas.scale(0.5f, 0.5f);
-        try (var svgData = Data.makeFromFileName("pinocchio.svg")) {
+        try (var svgData = Data.makeFromFileName(svgFile.getAbsolutePath())) {
             var svg = new SVGDOM(svgData);
             svg.render(canvas);
         }
