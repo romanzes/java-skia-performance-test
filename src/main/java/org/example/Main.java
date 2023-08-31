@@ -43,7 +43,7 @@ public class Main {
         File rasterFile = checkFileExists(dirPath + File.separator + "mars.jpg");
         File svgFile = checkFileExists(dirPath + File.separator + "pinocchio.svg");
         File fontFile = checkFileExists(dirPath + File.separator + "Adigiana_Ultra.ttf");
-        File outputFile = new File(dirPath + File.separator + "output.png");
+        File outputFile = new File(dirPath + File.separator + "output-java.png");
 
         for (int i = 0; i < loopCount; i++) {
             performance_test(rasterFile, svgFile, fontFile, outputFile);
