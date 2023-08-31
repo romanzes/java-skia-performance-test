@@ -92,14 +92,14 @@ public class Main {
     }
 
     private static void drawSVG(Canvas canvas) {
-        try (var bitmapData = Data.makeFromFileName("pinocchio.svg")) {
-            var svg = new SVGDOM(bitmapData);
-            canvas.save();
-            canvas.translate(1200.0f, 1200.0f);
-            canvas.scale(0.5f, 0.5f);
+        canvas.save();
+        canvas.translate(1200.0f, 1200.0f);
+        canvas.scale(0.5f, 0.5f);
+        try (var svgData = Data.makeFromFileName("pinocchio.svg")) {
+            var svg = new SVGDOM(svgData);
             svg.render(canvas);
-            canvas.restore();
         }
+        canvas.restore();
     }
 
     private static void saveToPng(Surface surface) throws IOException {
