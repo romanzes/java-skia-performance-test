@@ -12,7 +12,7 @@ public class Main {
             var canvas = surface.getCanvas();
             canvas.clear(0xFFFFFFFF);
             drawPath(canvas, paint);
-            drawRaster(canvas);
+            drawRaster(canvas, paint);
             drawText(canvas);
             drawSVG(canvas);
             saveToPng(surface);
@@ -42,13 +42,13 @@ public class Main {
         canvas.restore();
     }
 
-    private static void drawRaster(Canvas canvas) {
+    private static void drawRaster(Canvas canvas, Paint paint) {
         canvas.save();
         canvas.translate(1000.0f, 0.0f);
         canvas.scale(0.2f, 0.2f);
         try (var bitmapData = Data.makeFromFileName("mars.jpg")) {
             var bitmap = Image.makeDeferredFromEncodedBytes(bitmapData.getBytes());
-            canvas.drawImage(bitmap, 0.0f, 0.0f);
+            canvas.drawImage(bitmap, 0.0f, 0.0f, paint);
         }
         canvas.restore();
     }
