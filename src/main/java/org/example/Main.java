@@ -108,8 +108,4 @@ public class Main {
             java.nio.file.Files.write(java.nio.file.Path.of("output.png"), pngBytes);
         }
     }
-
-    private static void saveToPdf() {
-
-    }
 }
