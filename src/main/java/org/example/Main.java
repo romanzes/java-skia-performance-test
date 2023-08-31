@@ -9,6 +9,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
         try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
+            paint.setAntiAlias(true);
             var canvas = surface.getCanvas();
             canvas.clear(0xFFFFFFFF);
             drawPath(canvas, paint);
