@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        try (var surface = Surface.makeRasterN32Premul(2048, 2048); var paint = new Paint()) {
+        try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
             var canvas = surface.getCanvas();
             canvas.clear(0xFFFFFFFF);
             drawPath(canvas, paint);
@@ -44,7 +44,7 @@ public class Main {
 
     private static void drawRaster(Canvas canvas) {
         try (var bitmapData = Data.makeFromFileName("mars.jpg")) {
-            var image = Image.makeFromEncoded(bitmapData.getBytes());
+            var image = Image.makeDeferredFromEncodedBytes(bitmapData.getBytes());
             canvas.save();
             canvas.translate(1000.0f, 0.0f);
             canvas.scale(0.2f, 0.2f);
@@ -103,7 +103,7 @@ public class Main {
     }
 
     private static void saveToPng(Surface surface) throws IOException {
-        var data = surface.makeImageSnapshot().encodeToData();
+        var data = EncoderPNG.encode(surface.makeImageSnapshot());
         if (data != null) {
             byte[] pngBytes = data.getBytes();
             java.nio.file.Files.write(java.nio.file.Path.of("output.png"), pngBytes);
