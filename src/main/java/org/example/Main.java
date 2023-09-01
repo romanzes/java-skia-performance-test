@@ -64,13 +64,39 @@ public class Main {
             System.exit(1);
         }
 
-        File rasterFile = checkFileExists(dirPath + File.separator + "mars.jpg");
-        File svgFile = checkFileExists(dirPath + File.separator + "pinocchio.svg");
-        File fontFile = checkFileExists(dirPath + File.separator + "Adigiana_Ultra.ttf");
-        File outputFile = new File(dirPath + File.separator + "output-java.png");
-
+        if (drawAll) {
+            drawPath = true;
+            drawRaster = true;
+            drawText = true;
+            drawSvg = true;
+        }
         for (int i = 0; i < loopCount; i++) {
-            performance_test(rasterFile, svgFile, fontFile, outputFile);
+            performance_test(dirPath, drawPath, drawRaster, drawText, drawSvg);
+        }
+    }
+
+    private static void performance_test(String workingPath, boolean drawPath, boolean drawRaster, boolean drawText, boolean drawSvg) throws IOException {
+        try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
+            paint.setAntiAlias(true);
+            var canvas = surface.getCanvas();
+            canvas.clear(0xFFFFFFFF);
+            if (drawPath) {
+                drawPath(canvas, paint);
+            }
+            if (drawRaster) {
+                File rasterFile = checkFileExists(workingPath + File.separator + "mars.jpg");
+                drawRaster(canvas, paint, rasterFile);
+            }
+            if (drawText) {
+                File fontFile = checkFileExists(workingPath + File.separator + "Adigiana_Ultra.ttf");
+                drawText(canvas, fontFile);
+            }
+            if (drawSvg) {
+                File svgFile = checkFileExists(workingPath + File.separator + "pinocchio.svg");
+                drawSVG(canvas, svgFile);
+            }
+            File outputFile = new File(workingPath + File.separator + "output-java.png");
+            saveToPng(surface, outputFile);
         }
     }
 
@@ -81,19 +107,6 @@ public class Main {
             System.exit(1);
         }
         return file;
-    }
-
-    private static void performance_test(File rasterFile, File svgFile, File fontFile, File outputFile) throws IOException {
-        try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
-            paint.setAntiAlias(true);
-            var canvas = surface.getCanvas();
-            canvas.clear(0xFFFFFFFF);
-            drawPath(canvas, paint);
-            drawRaster(canvas, paint, rasterFile);
-            drawText(canvas, fontFile);
-            drawSVG(canvas, svgFile);
-            saveToPng(surface, outputFile);
-        }
     }
 
     private static void drawPath(Canvas canvas, Paint paint) {
