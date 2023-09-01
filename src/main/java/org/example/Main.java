@@ -3,6 +3,7 @@ package org.example;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.svg.SVGDOM;
+import io.github.humbleui.types.Rect;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -159,7 +160,8 @@ public class Main {
         canvas.scale(0.05f, 0.05f);
         try (var bitmapData = Data.makeFromFileName(rasterFile.getAbsolutePath())) {
             var bitmap = Image.makeDeferredFromEncodedBytes(bitmapData.getBytes());
-            canvas.drawImage(bitmap, 0.0f, 0.0f, paint);
+            var rect = Rect.makeWH(bitmap.getWidth(), bitmap.getHeight());
+            canvas.drawImageRect(bitmap, rect, rect, new FilterMipmap(FilterMode.LINEAR, MipmapMode.LINEAR), paint, false);
         }
         canvas.restore();
     }
