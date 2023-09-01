@@ -90,7 +90,8 @@ public class Main {
                 \tc23.056,7.628,28.372,22.725,23.418,27.775c-11.748,10.244-18.968,24.765-22.688,40.662c7.505,45.918,29.086,88.237,62.635,121.787
                 \tC139.916,456.7,196.167,480,256,480C315.832,480,372.084,456.7,414.392,414.393z""");
         canvas.save();
-        canvas.translate(100.0f, 100.0f);
+        canvas.translate(50.0f, 50.0f);
+        canvas.scale(1.8f, 1.8f);
         canvas.drawPath(path, paint);
         canvas.restore();
     }
@@ -146,8 +147,8 @@ public class Main {
 
     private static void drawSVG(Canvas canvas, File svgFile) {
         canvas.save();
-        canvas.translate(1200.0f, 1200.0f);
-        canvas.scale(0.5f, 0.5f);
+        canvas.translate(1400.0f, 1100.0f);
+        canvas.scale(0.9f, 0.9f);
         try (var svgData = Data.makeFromFileName(svgFile.getAbsolutePath())) {
             var svg = new SVGDOM(svgData);
             svg.render(canvas);
