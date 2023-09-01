@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Main {
+    private static final int CANVAS_SIZE = 512;
+
     public static void main(String[] args) throws IOException {
         String dirPath = null;
         int loopCount = 1;
@@ -18,6 +20,7 @@ public class Main {
         boolean drawText = false;
         boolean drawSvg = false;
         boolean save = false;
+        int scale = 1;
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -51,6 +54,14 @@ public class Main {
                     doAll = false;
                     save = true;
                 }
+                case "--scale" -> {
+                    try {
+                        scale = Integer.parseInt(args[++i]);
+                    } catch (Exception ex) {
+                        System.err.println("Set scale with --scale <number>");
+                        System.exit(1);
+                    }
+                }
                 default -> {
                     System.err.printf("Invalid argument: %s\n", arg);
                     System.exit(1);
@@ -77,15 +88,16 @@ public class Main {
             save = true;
         }
         for (int i = 0; i < loopCount; i++) {
-            performance_test(dirPath, drawPath, drawRaster, drawText, drawSvg, save);
+            performance_test(dirPath, drawPath, drawRaster, drawText, drawSvg, save, scale);
         }
     }
 
-    private static void performance_test(String workingPath, boolean drawPath, boolean drawRaster, boolean drawText, boolean drawSvg, boolean save) throws IOException {
-        try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
+    private static void performance_test(String workingPath, boolean drawPath, boolean drawRaster, boolean drawText, boolean drawSvg, boolean save, int scale) throws IOException {
+        try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(CANVAS_SIZE * scale, CANVAS_SIZE * scale)); var paint = new Paint()) {
             paint.setAntiAlias(true);
             var canvas = surface.getCanvas();
             canvas.clear(0xFFFFFFFF);
+            canvas.scale(scale, scale);
             if (drawPath) {
                 drawPath(canvas, paint);
             }
@@ -135,16 +147,16 @@ public class Main {
                 \tc23.056,7.628,28.372,22.725,23.418,27.775c-11.748,10.244-18.968,24.765-22.688,40.662c7.505,45.918,29.086,88.237,62.635,121.787
                 \tC139.916,456.7,196.167,480,256,480C315.832,480,372.084,456.7,414.392,414.393z""");
         canvas.save();
-        canvas.translate(50.0f, 50.0f);
-        canvas.scale(1.8f, 1.8f);
+        canvas.translate(12.0f, 12.0f);
+        canvas.scale(0.45f, 0.45f);
         canvas.drawPath(path, paint);
         canvas.restore();
     }
 
     private static void drawRaster(Canvas canvas, Paint paint, File rasterFile) {
         canvas.save();
-        canvas.translate(1000.0f, 0.0f);
-        canvas.scale(0.2f, 0.2f);
+        canvas.translate(250, 0.0f);
+        canvas.scale(0.05f, 0.05f);
         try (var bitmapData = Data.makeFromFileName(rasterFile.getAbsolutePath())) {
             var bitmap = Image.makeDeferredFromEncodedBytes(bitmapData.getBytes());
             canvas.drawImage(bitmap, 0.0f, 0.0f, paint);
@@ -163,7 +175,7 @@ public class Main {
         var style = new ParagraphStyle();
         var textStyle = new TextStyle();
         textStyle.setColor(Color.makeRGB(0, 0, 0));
-        textStyle.setFontSize(60.0f);
+        textStyle.setFontSize(15.0f);
         textStyle.setFontFamilies(new String[]{"Adigiana"});
         style.setTextStyle(textStyle);
         var paragraphBuilder = new ParagraphBuilder(style, fontCollection);
@@ -185,15 +197,15 @@ public class Main {
         paragraphBuilder.addText("occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n");
 
         var paragraph = paragraphBuilder.build();
-        paragraph.layout(900);
+        paragraph.layout(225);
 
-        paragraph.paint(canvas, 100.0f, 1100.0f);
+        paragraph.paint(canvas, 25.0f, 275.0f);
     }
 
     private static void drawSVG(Canvas canvas, File svgFile) {
         canvas.save();
-        canvas.translate(1400.0f, 1100.0f);
-        canvas.scale(0.9f, 0.9f);
+        canvas.translate(350.0f, 275.0f);
+        canvas.scale(0.22f, 0.22f);
         try (var svgData = Data.makeFromFileName(svgFile.getAbsolutePath())) {
             var svg = new SVGDOM(svgData);
             svg.render(canvas);
