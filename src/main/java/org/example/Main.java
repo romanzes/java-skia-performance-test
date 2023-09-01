@@ -12,20 +12,44 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String dirPath = null;
         int loopCount = 1;
+        boolean drawAll = true;
+        boolean drawPath = false;
+        boolean drawRaster = false;
+        boolean drawText = false;
+        boolean drawSvg = false;
+
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
-            if (arg.equals("--dir")) {
-                dirPath = args[++i];
-            } else if (arg.equals("--loop")) {
-                try {
-                    loopCount = Integer.parseInt(args[++i]);
-                } catch (Exception ex) {
-                    System.err.println("Set loop count with --loop <number>");
+            switch (arg) {
+                case "--dir" -> dirPath = args[++i];
+                case "--loop" -> {
+                    try {
+                        loopCount = Integer.parseInt(args[++i]);
+                    } catch (Exception ex) {
+                        System.err.println("Set loop count with --loop <number>");
+                        System.exit(1);
+                    }
+                }
+                case "--path" -> {
+                    drawAll = false;
+                    drawPath = true;
+                }
+                case "--raster" -> {
+                    drawAll = false;
+                    drawRaster = true;
+                }
+                case "--text" -> {
+                    drawAll = false;
+                    drawText = true;
+                }
+                case "--svg" -> {
+                    drawAll = false;
+                    drawSvg = true;
+                }
+                default -> {
+                    System.err.printf("Invalid argument: %s\n", arg);
                     System.exit(1);
                 }
-            } else {
-                System.err.printf("Invalid argument: %s\n", arg);
-                System.exit(1);
             }
         }
 
