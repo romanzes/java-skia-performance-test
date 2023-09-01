@@ -12,11 +12,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String dirPath = null;
         int loopCount = 1;
-        boolean drawAll = true;
+        boolean doAll = true;
         boolean drawPath = false;
         boolean drawRaster = false;
         boolean drawText = false;
         boolean drawSvg = false;
+        boolean save = false;
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -31,20 +32,24 @@ public class Main {
                     }
                 }
                 case "--path" -> {
-                    drawAll = false;
+                    doAll = false;
                     drawPath = true;
                 }
                 case "--raster" -> {
-                    drawAll = false;
+                    doAll = false;
                     drawRaster = true;
                 }
                 case "--text" -> {
-                    drawAll = false;
+                    doAll = false;
                     drawText = true;
                 }
                 case "--svg" -> {
-                    drawAll = false;
+                    doAll = false;
                     drawSvg = true;
+                }
+                case "--save" -> {
+                    doAll = false;
+                    save = true;
                 }
                 default -> {
                     System.err.printf("Invalid argument: %s\n", arg);
@@ -64,18 +69,19 @@ public class Main {
             System.exit(1);
         }
 
-        if (drawAll) {
+        if (doAll) {
             drawPath = true;
             drawRaster = true;
             drawText = true;
             drawSvg = true;
+            save = true;
         }
         for (int i = 0; i < loopCount; i++) {
-            performance_test(dirPath, drawPath, drawRaster, drawText, drawSvg);
+            performance_test(dirPath, drawPath, drawRaster, drawText, drawSvg, save);
         }
     }
 
-    private static void performance_test(String workingPath, boolean drawPath, boolean drawRaster, boolean drawText, boolean drawSvg) throws IOException {
+    private static void performance_test(String workingPath, boolean drawPath, boolean drawRaster, boolean drawText, boolean drawSvg, boolean save) throws IOException {
         try (var surface = Surface.makeRaster(ImageInfo.makeN32Premul(2048, 2048)); var paint = new Paint()) {
             paint.setAntiAlias(true);
             var canvas = surface.getCanvas();
@@ -95,8 +101,10 @@ public class Main {
                 File svgFile = checkFileExists(workingPath + File.separator + "pinocchio.svg");
                 drawSVG(canvas, svgFile);
             }
-            File outputFile = new File(workingPath + File.separator + "output-java.png");
-            saveToPng(surface, outputFile);
+            if (save) {
+                File outputFile = new File(workingPath + File.separator + "output-java.png");
+                saveToPng(surface, outputFile);
+            }
         }
     }
 
